@@ -1,0 +1,13 @@
+server:
+  port: 9393
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://127.0.0.1:27017/chat
+
+chat:
+  database: chat
+
+mongobee:
+  enabled: true
