@@ -5,8 +5,10 @@ import com.chatserver.model.Message;
 import com.chatserver.model.OutputMessage;
 import com.chatserver.service.ChatMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import java.text.SimpleDateFormat;
@@ -26,30 +28,27 @@ public class ChatController {
     @Autowired
     private ChatMessageService chatMessageService;
 
-//    private SimpMessagingTemplate template;
-//
-//    @Autowired
-//    public ChatController(SimpMessagingTemplate template) {
-//        this.template = template;
-//    }
+    private SimpMessagingTemplate template;
 
-    @MessageMapping("/chat")
-    @SendTo("/topic/messages")
-    public OutputMessage send(final Message message) throws Exception {
-        final String time = new SimpleDateFormat("HH:mm").format(new Date());
-        chatMessageService.saveMessage(new ChatMessage(null, message.getFrom(),message.getText(), "messages", null, LocalDateTime.now()));
-        return new OutputMessage(message.getFrom(), message.getText(), time);
+    @Autowired
+    public ChatController(SimpMessagingTemplate template) {
+        this.template = template;
     }
 
-    //Todo: Specific to room
+//    @MessageMapping("/chat")
+//    @SendTo("/topic/messages")
+//    public OutputMessage send(final Message message) throws Exception {
+//        final String time = new SimpleDateFormat("HH:mm").format(new Date());
+//        chatMessageService.saveMessage(new ChatMessage(null, message.getFrom(),message.getText(), "messages", null, LocalDateTime.now()));
+//        return new OutputMessage(message.getFrom(), message.getText(), time);
+//    }
 
-    //    @MessageMapping("/room/{room}")
-    //    @SendTo("/room/{room}")
-    //    public void send(@DestinationVariable String room, final Message message) throws Exception {
-    //        System.out.println("message:"+message.getFrom()+" text:"+message.getText());
-    //        final String time = new SimpleDateFormat("HH:mm").format(new Date());
-    //         chatMessageService.saveMessage(new ChatMessage(null, message.getFrom(),message.getText(), "messages", null, LocalDateTime.now()));
-    //        this.template.convertAndSend("/room/"+room, new OutputMessage(message.getFrom(), message.getText(), time));
-    //    }
+        @MessageMapping("/room/{room}")
+        @SendTo("/room/{room}")
+        public void send(@DestinationVariable String room, final Message message) throws Exception {
+            final String time = new SimpleDateFormat("HH:mm").format(new Date());
+             chatMessageService.saveMessage(new ChatMessage(null, message.getFrom(),message.getText(), room, null, LocalDateTime.now()));
+            this.template.convertAndSend("/room/"+room, new OutputMessage(message.getFrom(), message.getText(), time));
+        }
 
 }

@@ -24,14 +24,14 @@ public class WebSocketConfiguration extends AbstractWebSocketMessageBrokerConfig
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic/", "/queue/");
+        config.enableSimpleBroker("/room/", "/queue/");
         config.setApplicationDestinationPrefixes("/app");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/chat");
-        registry.addEndpoint("/chat").withSockJS();
+        registry.addEndpoint("/room");
+        registry.addEndpoint("/room").withSockJS();
         registry.addEndpoint("/greeting").setHandshakeHandler(new DefaultHandshakeHandler() {
 
             //Get sessionId from request and set it in Map attributes
